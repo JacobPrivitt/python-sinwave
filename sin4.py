@@ -2,55 +2,80 @@
 import random
 import time
 
-#shareprice
-x = 50
+def main():
+	# Growing list of share prices, including current
+	priceHistory = [50]
 
-#placeholders
-p = 0
-s = 0
-o = 0
+	# Current bank balance and amount of shares held
+	balance = 450
+	shareHeld = 0
 
-#balance
-y = 450
+	for a in range(20):
 
-#currently holding share?
-w = 0
+		sharePrice = priceHistory[-1] + random.randint(-15, 16)
 
-for a in range(20):
+		# Ensure stock can't be negatively priced
+		if sharePrice < 0: sharePrice = 0
+		
+		priceHistory.append(sharePrice)
 
-	z = random.randint(-15,16)
-	o = x
-	x = x + z
+		# With this modular setup, we can define many different 'buyer functions'
+		# that can have their own logic for choosing when and how much to buy/sell
+		(quantity, price) = naiveBuyer(balance, shareHeld, priceHistory)
 
-	#buy paramater
-	if (x - o) > (.1*o):
-		u = 1
-	else: u = 0
+		total = quantity * price
 
-	#sell parameter
-	if x > (1.1*p):
-		v = 1
-	else: v = 0
+		# Sanity checks
+		if (balance - total < 0):
+			print ('Error: AI tried to buy more than we can afford. Skipping forward...')
+			continue
 
-	#BUY
-	if w == 0 and u == 1:
-		y = y - x
-		w = 1
-		#hold buy price
-		p = x
-		print ('---------------')
-		print (y)
-		print ('---------------')
+		if (price < 0):
+			print ('Error: AI return negative price value. Skipping forward...')
+			continue
+
+		balance -= total
+		shareHeld += quantity
+
+		print ('current share price: ' + str(sharePrice))
+
+		if total > 0:
+			print ('\nBOUGHT ' + str(quantity) + ' for ' + str(price) + ' each')
+			print ('current balance: ' + str(balance) + '\n')
+		elif total < 0:
+			print ('\nSOLD ' + str(-quantity) + ' for ' + str(price) + ' each')
+			print ('current balance: ' + str(balance) + '\n')
+
+		time.sleep(0.5)
+
+	print ('\nfinal balance: ' + str(balance))
+
+
+# Keeps track of the price of the last share purchased
+buyPrice = 0
+
+# Takes in the current share price and returns a tuple
+# with the amount of shares to buy and at what price.
+# Will buy if positive, sell if negative, and wait if 0.
+def naiveBuyer(balance, shareHeld, priceHistory):
+
+	global buyPrice
+
+	oldSharePrice = priceHistory[-2]
+	currentSharePrice = priceHistory[-1]
+
+	if (currentSharePrice - oldSharePrice) > (0.1 * oldSharePrice) and (balance - currentSharePrice) >= 0 and shareHeld == 0:
+		# Buy a single share at market value
+		buyPrice = currentSharePrice
+		return (1, currentSharePrice)
 	
-	#SELL
-	elif w == 1 and v == 1:
-		y = y + x
-		w = 0
-		#hold sell price
-		s = x
-		print ('///////////////')
-		print (y)
-		print ('///////////////')
+	if currentSharePrice > (1.1 * buyPrice) and shareHeld > 0:
+		# Sell a single share at market value
+		return (-1, currentSharePrice)
+	
+	# Do nothing
+	return (0, 0)
 
-	print (x)
-	time.sleep(1)
+
+if __name__ == "__main__":
+	main()
