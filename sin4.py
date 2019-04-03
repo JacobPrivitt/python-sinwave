@@ -1,6 +1,10 @@
 #simple quant shit
 import random
 import time
+import matplotlib.pyplot as plt
+import numpy as np
+
+#TO-DO: Fail-safe
 
 def main():
 	# Growing list of share prices, including current
@@ -10,13 +14,13 @@ def main():
 	balance = 450
 	shareHeld = 0
 
-	for a in range(20):
+	for a in range(200):
 
 		sharePrice = priceHistory[-1] + random.randint(-15, 16)
 
 		# Ensure stock can't be negatively priced
 		if sharePrice < 0: sharePrice = 0
-		
+
 		priceHistory.append(sharePrice)
 
 		# With this modular setup, we can define many different 'buyer functions'
@@ -27,11 +31,11 @@ def main():
 
 		# Sanity checks
 		if (balance - total < 0):
-			print ('Error: AI tried to buy more than we can afford. Skipping forward...')
+			#print ('Error: AI tried to buy more than we can afford. Skipping forward...')
 			continue
 
 		if (price < 0):
-			print ('Error: AI return negative price value. Skipping forward...')
+			#print ('Error: AI return negative price value. Skipping forward...')
 			continue
 
 		balance -= total
@@ -40,16 +44,21 @@ def main():
 		print ('current share price: ' + str(sharePrice))
 
 		if total > 0:
-			print ('\nBOUGHT ' + str(quantity) + ' for ' + str(price) + ' each')
-			print ('current balance: ' + str(balance) + '\n')
+			continue
+			#print ('\nBOUGHT ' + str(quantity) + ' for ' + str(price) + ' each')
+			#print ('current balance: ' + str(balance) + '\n')
 		elif total < 0:
-			print ('\nSOLD ' + str(-quantity) + ' for ' + str(price) + ' each')
-			print ('current balance: ' + str(balance) + '\n')
+			continue
+			#print ('\nSOLD ' + str(-quantity) + ' for ' + str(price) + ' each')
+			#print ('current balance: ' + str(balance) + '\n')
 
-		time.sleep(0.5)
+		time.sleep(0)
 
-	print ('\nfinal balance: ' + str(balance))
-
+	#print ('\nfinal balance: ' + str(balance))
+	plt.plot(a,sharePrice)
+	plt.xlabel('Time')
+	plt.ylabel('Price')
+	plt.show()
 
 # Keeps track of the price of the last share purchased
 buyPrice = 0
@@ -64,15 +73,15 @@ def naiveBuyer(balance, shareHeld, priceHistory):
 	oldSharePrice = priceHistory[-2]
 	currentSharePrice = priceHistory[-1]
 
-	if (currentSharePrice - oldSharePrice) > (0.1 * oldSharePrice) and (balance - currentSharePrice) >= 0 and shareHeld == 0:
+	if (currentSharePrice - oldSharePrice) > (0.01 * oldSharePrice) and (balance - currentSharePrice) >= 0 and shareHeld == 0:
 		# Buy a single share at market value
 		buyPrice = currentSharePrice
 		return (1, currentSharePrice)
-	
-	if currentSharePrice > (1.1 * buyPrice) and shareHeld > 0:
+
+	if currentSharePrice > (1.01 * buyPrice) and shareHeld > 0:
 		# Sell a single share at market value
 		return (-1, currentSharePrice)
-	
+
 	# Do nothing
 	return (0, 0)
 
