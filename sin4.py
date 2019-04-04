@@ -68,7 +68,6 @@ def naiveBuyer(balance, shareHeld, priceHistory, counter):
 
 	oldSharePrice = priceHistory[-2]
 	currentSharePrice = priceHistory[-1]
-	#a = counter
 
 	if (currentSharePrice - oldSharePrice) > (0.01 * oldSharePrice) and (balance - currentSharePrice) >= 0 and shareHeld == 0:
 		# Buy a single share at market value
