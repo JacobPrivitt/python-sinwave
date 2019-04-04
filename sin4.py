@@ -56,13 +56,6 @@ def main():
 
 	print ('\nfinal balance: ' + str(balance))
 
-	'''
-	plt.plot(sharePrice)
-	plt.xlabel('Time')
-	plt.ylabel('Price')
-	plt.show()
-	'''
-
 # Keeps track of the price of the last share purchased
 buyPrice = 0
 
